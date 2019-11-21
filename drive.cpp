@@ -60,22 +60,19 @@ void drive_distance(float distance_cm, float angular_distance_deg) {
   float distance = distance_cm, angular_distance = angular_distance_deg * PI / 180;
   float distanceL, distanceR;
   
-  if(abs(angular_distance) > 1e-6) {
+  if(fabs(angular_distance) > 1e-6) {
     float radius = distance / angular_distance;
-    float radiusL = radius + WHEEL_SEPARATION / 2;
-    float radiusR = radius - WHEEL_SEPARATION / 2;
+    float radiusL = radius + WHEEL_SEPARATION / 2.0;
+    float radiusR = radius - WHEEL_SEPARATION / 2.0;
     distanceL = radiusL * angular_distance;
     distanceR = radiusR * angular_distance;
-    angle += angular_distance_deg;
-    while (angle <= 180) angle += 360;
-    while (angle > 180) angle -= 360;
-    
+        
   } else {
     distanceL = distance;
     distanceR = distance;
   }
   
-  float max_dis = max(abs(distanceL), abs(distanceR));
+  float max_dis = max(fabs(distanceL), fabs(distanceR));
   float velocityL = distanceL * STANDARD_VEL / max_dis * CMS2POWER, velocityR = distanceR * STANDARD_VEL / max_dis * CMS2POWER;
   float time_wait = max_dis / STANDARD_VEL * VEL2DIS_TIME_MULT;
 
@@ -105,13 +102,16 @@ void drive_distance(float distance_cm, float angular_distance_deg) {
 
   delay(time_wait);
   drive_velocity(0, 0);
+  
+  angle += angular_distance_deg;
+  while (angle <= 180) angle += 360;
+  while (angle > 180) angle -= 360;
 }
 
 
 void drive_velocity(float speed_cms, float angular_speed_degs) {
   float speed = speed_cms, angular_speed = angular_speed_degs * PI / 180;
   float velocityL, velocityR;
-
   
   if(abs(angular_speed) > 1e-6) {
     float radius = speed / angular_speed;

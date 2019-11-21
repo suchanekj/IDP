@@ -37,6 +37,7 @@ void sensors_init() {
 //wall position
 void get_wall_position(){
   F_wall_distance = IRsensor_F.distance();
+  F_wall_distance += 100;
 //  F_wall_distance = analogRead(IR_F_PIN);
   L_wall_distance = sonar_L.measureDistanceCm();
   R_wall_distance = sonar_R.measureDistanceCm();
@@ -46,9 +47,16 @@ void get_wall_position(){
 void get_mine_position(){
   L_mine_distance = IRsensor_L.distance();
   R_mine_distance = IRsensor_R.distance();
+  mine_centered = false, mine_L = false, mine_R = false;
 
-  if (L_mine_distance > MINE_CENTERED_MIN && L_mine_distance < MINE_CENTERED_MAX && R_mine_distance > MINE_CENTERED_MIN && R_mine_distance < MINE_CENTERED_MAX){
-    mine_centered = true;
+  if (L_mine_distance > MINE_CENTERED_MIN and L_mine_distance < MINE_CENTERED_MAX and
+      R_mine_distance > MINE_CENTERED_MIN and R_mine_distance < MINE_CENTERED_MAX){
+    if (abs(L_mine_distance - R_mine_distance) <= 2)
+      mine_centered = true;
+    else if (L_mine_distance > R_mine_distance)
+      mine_L = true;
+    else if (L_mine_distance < R_mine_distance)
+      mine_R = true;
   } else if (L_mine_distance < MINE_MAX_RANGE and F_wall_distance > L_mine_distance and R_wall_distance + 20 > L_mine_distance){
     mine_L = true;
   } else if (R_mine_distance < MINE_MAX_RANGE and F_wall_distance > R_mine_distance and L_wall_distance + 20 > R_mine_distance){

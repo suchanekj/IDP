@@ -31,7 +31,13 @@ void loop() {
   Serial.print("\tL_wall ");
   Serial.print(L_wall_distance);
   Serial.print("\tR_wall ");
-  Serial.println(R_wall_distance);
+  Serial.print(R_wall_distance);
+  Serial.print("\tmine_c ");
+  Serial.print(mine_centered);
+  Serial.print("\tmine_L ");
+  Serial.print(mine_L);
+  Serial.print("\tmine_R ");
+  Serial.println(mine_R);
 
   if (state = STATE_STARTUP) {
     state = STATE_SEARCHING;
@@ -54,10 +60,10 @@ void loop() {
       state = STATE_CARRYING;
       
     } else if (mine_L){
-      drive_distance(0, 5);
+      drive_distance(0.2, 1);
       
     } else if (mine_R){
-      drive_distance(0, -5);
+      drive_distance(0.2, -1);
       
     } else if (F_wall_distance <= 25 and false){
       drive_distance(30, 0);
