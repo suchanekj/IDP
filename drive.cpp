@@ -3,7 +3,6 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
-#include <SharpIR.h>
 
 bool drive_distance_verbose = false;
 bool drive_velocity_verbose = false;

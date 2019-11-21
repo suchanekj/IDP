@@ -49,7 +49,7 @@ void loop() {
       
       drive_velocity(1, 0);
 
-      int timeout = 10000 * 30;
+      unsigned int timeout = 10000 * 30;
       do {
         get_hall_sensors();
         delayMicroseconds(100);
