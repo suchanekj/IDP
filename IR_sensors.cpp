@@ -1,9 +1,6 @@
 #include <Arduino.h>
-#include "drive.h"
-#include <Wire.h>
-#include <Adafruit_MotorShield.h>
-#include "utility/Adafruit_MS_PWMServoDriver.h"
 #include "SharpIR.h"
+#include "config.h"
 #include <HCSR04.h>
 
 //get wall & mine position
