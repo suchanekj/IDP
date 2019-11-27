@@ -1,0 +1,3 @@
+#define SECRET_SSID
+#define WL_IDLE_STATUS
+#define PASSWORD E5tnuLmTDtVbRfWREYQ.BivFYGAlHefu
