@@ -24,8 +24,11 @@
 #define SONIC_R_ECHO_PIN     3
 
 //Hall effect sensor
-#define HALL_SENSOR_FLIP_PIN 12
-#define HALL_SENSOR_NO_FLIP_PIN 11
+#define HALL_SENSOR_1_PIN A3
+#define HALL_SENSOR_2_PIN A4
+#define HALL_SENSOR_3_PIN A5
+#define HALL_DETECTED_PIN 6
+#define HALL_FLIP_PIN 7
 
 /*
  *  config parameters

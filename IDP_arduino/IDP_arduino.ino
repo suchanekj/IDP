@@ -23,24 +23,32 @@ void loop() {
 
   get_wall_position();
   get_mine_position();
+  get_hall_sensors();
 
   Serial.print(state);
-  Serial.print("    L_mine ");
-  Serial.print(L_mine_distance);
-  Serial.print("\tR_mine ");
-  Serial.print(R_mine_distance);
-  Serial.print("\tF_wall ");
-  Serial.print(F_wall_distance);
-  Serial.print("\tL_wall ");
-  Serial.print(L_wall_distance);
-  Serial.print("\tR_wall ");
-  Serial.print(R_wall_distance);
-  Serial.print("\tmine_c ");
-  Serial.print(mine_centered);
-  Serial.print("\tmine_L ");
-  Serial.print(mine_L);
-  Serial.print("\tmine_R ");
-  Serial.println(mine_R);
+  Serial.print("\thall_1 ");
+  Serial.print(hall_1);
+  Serial.print("\thall_2 ");
+  Serial.print(hall_2);
+  Serial.print("\thall_3 ");
+  Serial.print(hall_3);
+//  Serial.print("\tL_mine ");
+//  Serial.print(L_mine_distance);
+//  Serial.print("\tR_mine ");
+//  Serial.print(R_mine_distance);
+//  Serial.print("\tF_wall ");
+//  Serial.print(F_wall_distance);
+//  Serial.print("\tL_wall ");
+//  Serial.print(L_wall_distance);
+//  Serial.print("\tR_wall ");
+//  Serial.print(R_wall_distance);
+//  Serial.print("\tmine_c ");
+//  Serial.print(mine_centered);
+//  Serial.print("\tmine_L ");
+//  Serial.print(mine_L);
+//  Serial.print("\tmine_R ");
+//  Serial.print(mine_R);
+  Serial.println();
 
   if (state == STATE_STARTUP) {
     drive_distance(25, 0);
@@ -49,17 +57,23 @@ void loop() {
   } else if (state == STATE_SEARCHING) {
     
     if (mine_centered){
-      drive_distance(10, 0);
+      hall_reset();
+      drive_distance(7, 0);
       
-      drive_velocity(1, 0);
+      drive_velocity(1.5, 0);
 
       long timeout = 1000 * 20;
       do {
         get_hall_sensors();
         delayMicroseconds(1000);
+        if(magnet_detection) {
+          timeout = min(timeout, 1400);
+        }
         timeout--;
-      } while (!magnet_detection and timeout > 0);
-      // TODO: pickup and flipping?
+      } while (timeout > 0);
+      drive_velocity(0, 0);
+      
+      pickup(magnet_side);
       
       drive_velocity(0, 0);
       state = STATE_CARRYING;
@@ -75,13 +89,15 @@ void loop() {
         state = STATE_RETURNING;
         return;
       }
+      int move_by = 30;
+      if (L_wall_distance <= 40 or R_wall_distance <= 40){
+        move_by = 15;
+      }
       int turn_angle = 0 - angle;
       drive_distance(30, 0);
       drive_distance(-10, 0);
       drive_distance(0, turn_angle);
-      //delayMicroseconds(100);
-      drive_distance(30, 0);
-      //delayMicroseconds(100);
+      drive_distance(move_by, 0);
       drive_distance(0, turn_angle);
       drive_distance(-30, 0);
       drive_velocity(STANDARD_VEL, 0);
@@ -105,7 +121,9 @@ void loop() {
       get_wall_position();
       delayMicroseconds(1000);
     } while (F_wall_distance > 25);
-    // drop off mine
+    
+    drop_off(magnet_side, magnet_direction_flip);
+
     drive_distance(0, 90);
     drive_distance(-30, 0);
     float distance = time_drive * STANDARD_VEL / VEL2DIS_TIME_MULT;

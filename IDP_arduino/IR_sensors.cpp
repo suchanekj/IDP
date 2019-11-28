@@ -4,9 +4,9 @@
 #include <HCSR04.h>
 
 //get wall & mine position
-int F_wall_distance = 100, L_wall_distance = 100, R_wall_distance = 100, L_mine_distance = 100, R_mine_distance = 100;
+int F_wall_distance = 100, L_wall_distance = 100, R_wall_distance = 100, L_mine_distance = 100, R_mine_distance = 100, hall_1 = 0, hall_2 = 0, hall_3 = 0;
 bool mine_centered = false, mine_L = false, mine_R = false;
-bool magnet_direction_flip, magnet_detection;
+bool magnet_direction_flip = false, magnet_detection = false, magnet_side = false;
 
 //sensor variables
 UltraSonicDistanceSensor sonar_L(SONIC_L_TRIGGER_PIN, SONIC_L_ECHO_PIN);
@@ -27,8 +27,29 @@ void sensors_init() {
   pinMode(IR_R_PIN, INPUT);
   pinMode(IR_F_PIN, INPUT);
   
-  pinMode(HALL_SENSOR_FLIP_PIN, INPUT);
-  pinMode(HALL_SENSOR_NO_FLIP_PIN, INPUT);
+  pinMode(HALL_SENSOR_1_PIN, INPUT);
+  pinMode(HALL_SENSOR_2_PIN, INPUT);
+  pinMode(HALL_SENSOR_3_PIN, INPUT);
+}
+
+void hall_reset() {
+  magnet_direction_flip = false, magnet_detection = false, magnet_side = false;
+}
+
+void get_hall_sensors() {
+  hall_1 = analogRead(HALL_SENSOR_1_PIN);
+  hall_2 = analogRead(HALL_SENSOR_2_PIN);
+  hall_3 = analogRead(HALL_SENSOR_3_PIN);
+  if(digitalRead(HALL_DETECTED_PIN) == HIGH) {
+    magnet_detection = true;
+  }
+  if(digitalRead(HALL_FLIP_PIN) == HIGH) {
+    magnet_direction_flip = true;
+  }
+  // TODO: fix comparisons and tresholds - TEST !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  if(hall_1 > 700 or hall_2 > 800 or hall_3 > 750) { // There is a magnet on top
+    magnet_side = true;
+  }
 }
 
 //wall position
@@ -65,9 +86,4 @@ void get_mine_position(){
   } else if (R_mine_distance < MINE_MAX_RANGE and F_wall_distance > R_mine_distance and L_wall_distance + 20 > R_mine_distance){
     mine_R = true;
   } 
-}
-
-void get_hall_sensors() {
-  magnet_detection = digitalRead(HALL_SENSOR_FLIP_PIN) == HIGH or digitalRead(HALL_SENSOR_NO_FLIP_PIN) == HIGH;
-  magnet_direction_flip = digitalRead(HALL_SENSOR_FLIP_PIN) == HIGH;
 }

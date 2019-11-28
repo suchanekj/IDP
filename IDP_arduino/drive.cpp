@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Servo.h>
 #include "drive.h"
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
@@ -15,10 +16,74 @@ float ang_speed_drive_velocity = 0;
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
 Adafruit_DCMotor *MotorL = AFMS.getMotor(3);
 Adafruit_DCMotor *MotorR = AFMS.getMotor(4);
+Adafruit_DCMotor *MotorTop = AFMS.getMotor(1); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Adafruit_DCMotor *MotorBottom = AFMS.getMotor(2); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Servo servoPicker;
 
 //start the motor
 void drive_init() {
   AFMS.begin();
+  servoPicker.attach(9); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (bottom means magnet on the bottom of mine)
+#define SERVO_POSITION_BOTTOM 30
+#define SERVO_POSITION_TOP 10
+#define SERVO_POSITION_LEVEL 0
+
+void pickup(bool top) {
+  MotorTop->run(BACKWARD);
+  MotorTop->setSpeed(100);
+  MotorBottom->run(BACKWARD);
+  MotorBottom->setSpeed(100);
+  if(!top) {
+    servoPicker.write(SERVO_POSITION_BOTTOM);
+  } else {
+    servoPicker.write(SERVO_POSITION_TOP);
+  }
+  delay(600);
+  MotorTop->setSpeed(0);
+  MotorBottom->setSpeed(0);
+  drive_velocity(3, 0);
+  delay(3000);
+  servoPicker.write(SERVO_POSITION_LEVEL);
+  drive_velocity(0, 0);
+  delay(300);
+}
+
+void drop_off(bool top, bool flip) {
+  drive_distance(10, 0);
+  if(flip) {
+    if(top) {
+      MotorTop->run(FORWARD);
+      MotorTop->setSpeed(100);
+      delay(1500);
+      MotorTop->setSpeed(0);
+    } else {
+      MotorBottom->run(FORWARD);
+      MotorBottom->setSpeed(100);
+      delay(1500);
+      MotorBottom->setSpeed(0);
+    }
+    top = !top;
+  }
+  if(top) {
+    servoPicker.write(SERVO_POSITION_TOP);
+  } else {
+    servoPicker.write(SERVO_POSITION_BOTTOM);
+  }
+  MotorTop->run(FORWARD);
+  MotorTop->setSpeed(100);
+  MotorBottom->run(FORWARD);
+  MotorBottom->setSpeed(100);
+  delay(1500);
+  servoPicker.write(SERVO_POSITION_LEVEL);
+  MotorTop->run(BACKWARD);
+  MotorTop->setSpeed(100);
+  MotorBottom->run(BACKWARD);
+  MotorBottom->setSpeed(100);
+  delay(1000);
+  drive_distance(-10, 0);
 }
 
 //testing drive
