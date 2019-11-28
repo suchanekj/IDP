@@ -8,7 +8,6 @@
 
 int state = STATE_STARTUP, mine_counter = 0;
 
-// function that runs first - before void loop()
 void setup() {
   Serial.begin(115200); // Open serial monitor at 115200 baud to see ping results.
   drive_init();
@@ -32,22 +31,22 @@ void loop() {
   Serial.print(hall_2);
   Serial.print("\thall_3 ");
   Serial.print(hall_3);
-//  Serial.print("\tL_mine ");
-//  Serial.print(L_mine_distance);
-//  Serial.print("\tR_mine ");
-//  Serial.print(R_mine_distance);
-//  Serial.print("\tF_wall ");
-//  Serial.print(F_wall_distance);
-//  Serial.print("\tL_wall ");
-//  Serial.print(L_wall_distance);
-//  Serial.print("\tR_wall ");
-//  Serial.print(R_wall_distance);
-//  Serial.print("\tmine_c ");
-//  Serial.print(mine_centered);
-//  Serial.print("\tmine_L ");
-//  Serial.print(mine_L);
-//  Serial.print("\tmine_R ");
-//  Serial.print(mine_R);
+  Serial.print("\tL_mine ");
+  Serial.print(L_mine_distance);
+  Serial.print("\tR_mine ");
+  Serial.print(R_mine_distance);
+  Serial.print("\tF_wall ");
+  Serial.print(F_wall_distance);
+  Serial.print("\tL_wall ");
+  Serial.print(L_wall_distance);
+  Serial.print("\tR_wall ");
+  Serial.print(R_wall_distance);
+  Serial.print("\tmine_c ");
+  Serial.print(mine_centered);
+  Serial.print("\tmine_L ");
+  Serial.print(mine_L);
+  Serial.print("\tmine_R ");
+  Serial.print(mine_R);
   Serial.println();
 
   if (state == STATE_STARTUP) {
@@ -57,6 +56,7 @@ void loop() {
   } else if (state == STATE_SEARCHING) {
     
     if (mine_centered){
+      Serial.println("mine centered");
       hall_reset();
       drive_distance(7, 0);
       
@@ -71,9 +71,11 @@ void loop() {
         }
         timeout--;
       } while (timeout > 0);
+      Serial.println("hall detected");
       drive_velocity(0, 0);
       
-      pickup(magnet_side);
+      pickup(magnet_side, magnet_direction_flip);
+      Serial.println("picked up");
       
       drive_velocity(0, 0);
       state = STATE_CARRYING;
@@ -122,7 +124,7 @@ void loop() {
       delayMicroseconds(1000);
     } while (F_wall_distance > 25);
     
-    drop_off(magnet_side, magnet_direction_flip);
+    drop_off(magnet_side);
 
     drive_distance(0, 90);
     drive_distance(-30, 0);
@@ -155,68 +157,200 @@ void loop() {
   }
 }
 
+/*
+// ****************scanning available WIFI****************
+
+void setup() {
+  // initialize serial and wait for the port to open:
+  Serial.begin(9600);
+  while(!Serial) ;
+
+  // attempt to connect using WEP encryption:
+  Serial.println("Initializing Wifi...");
+  printMacAddress();
+
+  Serial.println("Scanning available networks...");
+  listNetworks();
+}
+
+void loop() {
+  delay(10000);
+  // scan for existing networks:
+  Serial.println("Scanning available networks...");
+  listNetworks();
+}
+
+void printMacAddress() {
+  // the MAC address of your Wifi shield
+  byte mac[6];                     
+
+  // print your MAC address:
+  WiFi.macAddress(mac);
+  Serial.print("MAC: ");
+  Serial.print(mac[5],HEX);
+  Serial.print(":");
+  Serial.print(mac[4],HEX);
+  Serial.print(":");
+  Serial.print(mac[3],HEX);
+  Serial.print(":");
+  Serial.print(mac[2],HEX);
+  Serial.print(":");
+  Serial.print(mac[1],HEX);
+  Serial.print(":");
+  Serial.println(mac[0],HEX);
+}
+
+void listNetworks() {
+  // scan for nearby networks:
+  Serial.println("** Scan Networks **");
+  byte numSsid = WiFi.scanNetworks();
+
+  // print the list of networks seen:
+  Serial.print("number of available networks:");
+  Serial.println(numSsid);
+
+  // print the network number and name for each network found:
+  for (int thisNet = 0; thisNet<numSsid; thisNet++) {
+    Serial.print(thisNet);
+    Serial.print(") ");
+    Serial.print(WiFi.SSID(thisNet));
+    Serial.print("\tSignal: ");
+    Serial.print(WiFi.RSSI(thisNet));
+    Serial.print(" dBm");
+    Serial.print("\tEncryption: ");
+    Serial.println(WiFi.encryptionType(thisNet));
+  }
+}
 
 
-//for WIFI
-//void setup() {
-//  // initialize serial and wait for the port to open:
-//  Serial.begin(9600);
-//  while(!Serial) ;
-//
-//  // attempt to connect using WEP encryption:
-//  Serial.println("Initializing Wifi...");
-//  printMacAddress();
-//
-//  // scan for existing networks:
-//  Serial.println("Scanning available networks...");
-//  listNetworks();
-//}
-//
-//void loop() {
-//  delay(10000);
-//  // scan for existing networks:
-//  Serial.println("Scanning available networks...");
-//  listNetworks();
-//}
-//
-//void printMacAddress() {
-//  // the MAC address of your Wifi shield
-//  byte mac[6];                     
-//
-//  // print your MAC address:
-//  WiFi.macAddress(mac);
-//  Serial.print("MAC: ");
-//  Serial.print(mac[5],HEX);
-//  Serial.print(":");
-//  Serial.print(mac[4],HEX);
-//  Serial.print(":");
-//  Serial.print(mac[3],HEX);
-//  Serial.print(":");
-//  Serial.print(mac[2],HEX);
-//  Serial.print(":");
-//  Serial.print(mac[1],HEX);
-//  Serial.print(":");
-//  Serial.println(mac[0],HEX);
-//}
-//
-//void listNetworks() {
-//  // scan for nearby networks:
-//  Serial.println("** Scan Networks **");
-//  byte numSsid = WiFi.scanNetworks();
-//
-//  // print the list of networks seen:
-//  Serial.print("number of available networks:");
-//  Serial.println(numSsid);
-//
-//  // print the network number and name for each network found:
-//  for (int thisNet = 0; thisNet<numSsid; thisNet++) {
-//    Serial.print(thisNet);
-//    Serial.print(") ");
-//    Serial.print(WiFi.SSID(thisNet));
-//    Serial.print("\tSignal: ");
-//    Serial.print(WiFi.RSSI(thisNet));
-//    Serial.print(" dBm");
-//    Serial.print("\tEncryption: ");
-//    Serial.println(WiFi.encryptionType(thisNet));
-//  }
-//}
+// ****************check if the firmware loaded on the NINA module is updated****************
+
+void setup() {
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
+
+  Serial.println("WiFiNINA firmware check.");
+  Serial.println();
+
+  // check for the WiFi module:
+  if (WiFi.status() == WL_NO_MODULE) {
+    Serial.println("Communication with WiFi module failed!");
+    // don't continue
+    while (true);
+  }
+
+  // Print firmware version on the module
+  String fv = WiFi.firmwareVersion();
+  String latestFv;
+  Serial.print("Firmware version installed: ");
+  Serial.println(fv);
+
+  latestFv = WIFI_FIRMWARE_LATEST_VERSION;
+
+  // Print required firmware version
+  Serial.print("Latest firmware version available : ");
+  Serial.println(latestFv);
+
+  // Check if the latest version is installed
+  Serial.println();
+  if (fv >= latestFv) {
+    Serial.println("Check result: PASSED");
+  } else {
+    Serial.println("Check result: NOT PASSED");
+    Serial.println(" - The firmware version on the module do not match the");
+    Serial.println("   version required by the library, you may experience");
+    Serial.println("   issues or failures.");
+  }
+}
+
+void loop() {
+  // nothing
+}
+
+
+
+ ****************connect to WIFI****************
+
+char ssid[] = SECRET_SSID;
+char pass[] = PASSWORD;
+int status = WL_IDLE_STATUS;     // the Wifi radio's status
+
+void setup() {
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
+
+  // check for the WiFi module:
+  if (WiFi.status() == WL_NO_MODULE) {
+    Serial.println("Communication with WiFi module failed!");
+    while (true);
+  }
+
+  String fv = WiFi.firmwareVersion();
+  if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
+    Serial.println("Please upgrade the firmware");
+  }
+
+  // attempt to connect to Wifi network:
+  while (status != WL_CONNECTED) {
+    Serial.print("Attempting to connect to WPA SSID: ");
+    Serial.println(ssid);
+    // Connect to WPA/WPA2 network:
+    status = WiFi.begin(ssid, pass);
+
+    // wait 10 seconds for connection:
+    delay(10000);
+  }
+
+  // you're connected now, so print out the data:
+  Serial.print("You're connected to the network");
+  printCurrentNet();
+  printWifiData();
+}
+
+void loop() {
+  // check the network connection once every 10 seconds:
+  delay(10000);
+  printCurrentNet();
+}
+
+void printWifiData() {
+  // print your board's IP address:
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP Address: ");
+  Serial.println(ip);
+  Serial.println(ip);
+
+  // print your MAC address:
+  byte mac[6];
+  WiFi.macAddress(mac);
+  Serial.print("MAC address: ");
+  printMacAddress(mac);
+}
+
+void printCurrentNet() {
+  // print the SSID of the network you're attached to:
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
+
+  // print the MAC address of the router you're attached to:
+  byte bssid[6];
+  WiFi.BSSID(bssid);
+  Serial.print("BSSID: ");
+  printMacAddress(bssid);
+
+  // print the received signal strength:
+  long rssi = WiFi.RSSI();
+  Serial.print("signal strength (RSSI):");
+  Serial.println(rssi);
+
+  // print the encryption type:
+  byte encryption = WiFi.encryptionType();
+  Serial.print("Encryption Type:");
+  Serial.println(encryption, HEX);
+  Serial.println();
+}
+*/

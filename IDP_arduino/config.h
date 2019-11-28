@@ -43,6 +43,9 @@
 #define VEL2DIS_TIME_MULT 640
 #define CMS2POWER 20
 
+#define DRIVE_BACKWARD FORWARD
+#define DRIVE_FORWARD BACKWARD
+
 //mine number limit
 #define MINE_CENTERED_MAX 20
 #define MINE_CENTERED_MIN 5

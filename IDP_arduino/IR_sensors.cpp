@@ -47,7 +47,8 @@ void get_hall_sensors() {
     magnet_direction_flip = true;
   }
   // TODO: fix comparisons and tresholds - TEST !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if(hall_1 > 700 or hall_2 > 800 or hall_3 > 750) { // There is a magnet on top
+  if(hall_1 > 560 or hall_2 > 560 or hall_3 > 560 or
+     hall_1 < 460 or hall_2 < 460 or hall_3 < 460) { // There is a magnet on top
     magnet_side = true;
   }
 }

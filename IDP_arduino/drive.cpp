@@ -31,7 +31,7 @@ void drive_init() {
 #define SERVO_POSITION_TOP 10
 #define SERVO_POSITION_LEVEL 0
 
-void pickup(bool top) {
+void pickup(bool top, bool flip) {
   MotorTop->run(BACKWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   MotorTop->setSpeed(100);
   MotorBottom->run(BACKWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -44,15 +44,13 @@ void pickup(bool top) {
   delay(600); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   MotorTop->setSpeed(0);
   MotorBottom->setSpeed(0);
-  drive_velocity(3, 0);
+  //drive_velocity(3, 0);
   delay(3000); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   servoPicker.write(SERVO_POSITION_LEVEL);
   drive_velocity(0, 0);
   delay(300); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-}
 
-void drop_off(bool top, bool flip) {
-  drive_distance(10, 0);
+
   if(flip) {
     if(top) {
       MotorTop->run(FORWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -67,6 +65,14 @@ void drop_off(bool top, bool flip) {
     }
     top = !top;
   }
+}
+
+
+
+
+void drop_off(bool top) {
+  drive_distance(10, 0);
+  
   if(top) {
     servoPicker.write(SERVO_POSITION_TOP);
   } else {
@@ -129,7 +135,7 @@ void drive_distance(float distance_cm, float angular_distance_deg) {
     time_drive_velocity = -1;
   }
   
-  float distance = distance_cm, angular_distance = angular_distance_deg * PI / 180;
+  float distance = distance_cm, angular_distance = -angular_distance_deg * PI / 180;
   float distanceL, distanceR;
   
   if(fabs(angular_distance) > 1e-6) {
@@ -150,16 +156,16 @@ void drive_distance(float distance_cm, float angular_distance_deg) {
 
   MotorL->setSpeed(abs(velocityL) * POWER_L_TO_R);
   if (velocityL < 0){
-    MotorL->run(BACKWARD);
+    MotorL->run(DRIVE_BACKWARD);
   } else {
-    MotorL->run(FORWARD);
+    MotorL->run(DRIVE_FORWARD);
   }
 
   MotorR->setSpeed(abs(velocityR) / POWER_L_TO_R);
   if (velocityR < 0){
-    MotorR->run(BACKWARD);
+    MotorR->run(DRIVE_BACKWARD);
   } else {
-    MotorR->run(FORWARD);
+    MotorR->run(DRIVE_FORWARD);
   }
 
   if(drive_distance_verbose) {
@@ -190,7 +196,7 @@ void drive_velocity(float speed_cms, float angular_speed_degs) {
     time_drive_velocity = -1;
   }
   
-  float speed = speed_cms, angular_speed = angular_speed_degs * PI / 180;
+  float speed = speed_cms, angular_speed = -angular_speed_degs * PI / 180;
   float velocityL, velocityR;
   
   if(abs(angular_speed) > 1e-6) {
@@ -208,16 +214,16 @@ void drive_velocity(float speed_cms, float angular_speed_degs) {
 
   MotorL->setSpeed(abs(velocityL) * POWER_L_TO_R);
   if (velocityL < 0){
-    MotorL->run(BACKWARD);
+    MotorL->run(DRIVE_BACKWARD);
   } else {
-    MotorL->run(FORWARD);
+    MotorL->run(DRIVE_FORWARD);
   }
 
   MotorR->setSpeed(abs(velocityR) / POWER_L_TO_R);
   if (velocityR < 0){
-    MotorR->run(BACKWARD);
+    MotorR->run(DRIVE_BACKWARD);
   } else {
-    MotorR->run(FORWARD);
+    MotorR->run(DRIVE_FORWARD);
   }
   
   if(drive_velocity_verbose) {
