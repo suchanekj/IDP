@@ -6,7 +6,6 @@ extern bool magnet_direction_flip, magnet_detection, magnet_side;
 
 void sensors_init();
 void hall_reset();
-void get_hall_sensors();
 void get_wall_position();
 void get_mine_position();
 void get_hall_sensors();

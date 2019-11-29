@@ -1,3 +1,2 @@
-#define SECRET_SSID
-#define WL_IDLE_STATUS
-#define PASSWORD E5tnuLmTDtVbRfWREYQ.BivFYGAlHefu
+#define SECRET_SSID "CUED Robots"
+#define PASSWORD "E5tnuLmTDtVbRfWREYQ.BivFYGAlHefu"

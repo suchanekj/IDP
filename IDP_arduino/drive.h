@@ -5,6 +5,7 @@ extern bool drive_velocity_verbose;
 extern bool robotIsMoving;
 extern float angle;
 
+void picker_test();
 void pickup(bool top, bool flip);
 void drop_off(bool top, bool flip);
 void drive_distance(float distance_cm, float angular_distance_deg);
