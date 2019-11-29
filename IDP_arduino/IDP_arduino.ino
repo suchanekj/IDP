@@ -15,10 +15,13 @@ void setup() {
   sensors_init();
   drive_distance_verbose = false;
   drive_velocity_verbose = false;
+
+  pickup(false, false);
 }
 
 
 void loop() {
+  return;
 //  drive_test();
 
   get_wall_position();
@@ -73,7 +76,7 @@ void loop() {
       } while (timeout > 0);
       drive_velocity(0, 0);
       
-      pickup(magnet_side);
+      pickup(magnet_side, magnet_direction_flip);
       
       drive_velocity(0, 0);
       state = STATE_CARRYING;

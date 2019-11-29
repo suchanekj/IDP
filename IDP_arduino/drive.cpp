@@ -31,7 +31,7 @@ void drive_init() {
 #define SERVO_POSITION_TOP 10
 #define SERVO_POSITION_LEVEL 0
 
-void pickup(bool top) {
+void pickup(bool top, bool flip) {
   MotorTop->run(BACKWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   MotorTop->setSpeed(100);
   MotorBottom->run(BACKWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -49,10 +49,7 @@ void pickup(bool top) {
   servoPicker.write(SERVO_POSITION_LEVEL);
   drive_velocity(0, 0);
   delay(300); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-}
-
-void drop_off(bool top, bool flip) {
-  drive_distance(10, 0);
+  
   if(flip) {
     if(top) {
       MotorTop->run(FORWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -65,6 +62,12 @@ void drop_off(bool top, bool flip) {
       delay(1500); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       MotorBottom->setSpeed(0);
     }
+  }
+}
+
+void drop_off(bool top, bool flip) {
+  drive_distance(10, 0);
+  if(flip) {
     top = !top;
   }
   if(top) {
