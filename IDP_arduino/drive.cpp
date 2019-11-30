@@ -73,19 +73,19 @@ void pickup(bool top, bool flip) {
   Serial.println("level picker");
   servoPicker.write(SERVO_POSITION_LEVEL);
   drive_velocity(0, 0);
-  delay(300); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  delay(500); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   if(flip) {
     Serial.println("flip");
     if(top) {
       MotorBottom->run(FORWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       MotorBottom->setSpeed(200);
-      delay(2000); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      delay(3000); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       MotorBottom->setSpeed(0);
     } else {
       MotorTop->run(FORWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       MotorTop->setSpeed(120);
-      delay(2000); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      delay(3000); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       MotorTop->setSpeed(0);
     }
   }
@@ -107,13 +107,13 @@ void drop_off(bool top, bool flip) {
   MotorTop->setSpeed(120);
   MotorBottom->run(FORWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   MotorBottom->setSpeed(200);
-  delay(1500); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  delay(2000); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   servoPicker.write(SERVO_POSITION_LEVEL);
   MotorTop->run(BACKWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   MotorTop->setSpeed(120);
   MotorBottom->run(BACKWARD); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   MotorBottom->setSpeed(200);
-  delay(1000); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  delay(1500); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   drive_distance(-10, 0);
 }
 

@@ -21,7 +21,9 @@ void setup() {
 
 void loop() {
   pickup(false, true);
-  delay(200000);
+  delayMicroseconds(1000);
+  drop_off(false, true);
+//  delay(2000);
 //  picker_test();
 //  drive_test();
   return;
@@ -80,7 +82,7 @@ void loop() {
       Serial.println("hall detected");
       drive_velocity(0, 0);
       
-      pickup(magnet_side, magnet_direction_flip);
+//      pickup(magnet_side, magnet_direction_flip);  *************************************************
 
       Serial.println("picked up");
       
@@ -131,7 +133,7 @@ void loop() {
       delayMicroseconds(1000);
     } while (F_wall_distance > 25);
     
-    drop_off(magnet_side, magnet_direction_flip);
+//    drop_off(magnet_side, magnet_direction_flip);*************************************************
 
     drive_distance(0, 90);
     drive_distance(-30, 0);
