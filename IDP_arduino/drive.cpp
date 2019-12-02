@@ -154,6 +154,7 @@ void drop_off(bool top, bool flip) {
   MotorBottom->run(FORWARD);
   MotorBottom->setSpeed(230);
   delay(2500);
+
   servoPicker.write(SERVO_POSITION_LEVEL);
   MotorTop->run(BACKWARD);
   MotorTop->setSpeed(120);

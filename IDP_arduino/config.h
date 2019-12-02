@@ -43,6 +43,7 @@
 #define SEARCHING_VEL 8
 #define POWER_L_TO_R 0.995
 #define MAX_VEL 10
+
 #define WHEEL_SEPARATION 28
 #define VEL2DIS_TIME_MULT 640
 #define CMS2POWER 20.5

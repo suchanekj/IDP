@@ -3,9 +3,8 @@
 #include "IR_sensors.h"
 #include "wifi.h"
 #include <Servo.h>
-#include <SPI.h>
-#include <WiFiNINA.h>
-#include "arduino_secrets.h" 
+//#include <SPI.h>
+//#include <WiFiNINA.h>
 
 int state = STATE_STARTUP, mine_counter = 0;
 long time_led = 0;
@@ -115,7 +114,7 @@ void loop() {
       Serial.println("hall detected");
       drive_velocity(0, 0);
       
-      pickup(magnet_side, magnet_direction_flip);
+//      pickup(magnet_side, magnet_direction_flip);  *************************************************
 
       Serial.println("picked up");
       
@@ -183,7 +182,6 @@ void loop() {
       }
     } while (F_wall_distance > 25);
     
-    
     drop_off(magnet_side, magnet_direction_flip);
     mine_in = false;
 
@@ -230,134 +228,3 @@ void loop() {
     time_led = millis();
   }
 }
-
-//// ****************check if the firmware loaded on the NINA module is updated****************
-//
-//void setup() {
-//  Serial.begin(9600);
-//  while (!Serial) {
-//    ; // wait for serial port to connect. Needed for native USB port only
-//  }
-//
-//  Serial.println("WiFiNINA firmware check.");
-//  Serial.println();
-//
-//  // check for the WiFi module:
-//  if (WiFi.status() == WL_NO_MODULE) {
-//    Serial.println("Communication with WiFi module failed!");
-//    // don't continue
-//    while (true);
-//  }
-//
-//  // Print firmware version on the module
-//  String fv = WiFi.firmwareVersion();
-//  String latestFv;
-//  Serial.print("Firmware version installed: ");
-//  Serial.println(fv);
-//
-//  latestFv = WIFI_FIRMWARE_LATEST_VERSION;
-//
-//  // Print required firmware version
-//  Serial.print("Latest firmware version available : ");
-//  Serial.println(latestFv);
-//
-//  // Check if the latest version is installed
-//  Serial.println();
-//  if (fv >= latestFv) {
-//    Serial.println("Check result: PASSED");
-//  } else {
-//    Serial.println("Check result: NOT PASSED");
-//    Serial.println(" - The firmware version on the module do not match the");
-//    Serial.println("   version required by the library, you may experience");
-//    Serial.println("   issues or failures.");
-//  }
-//}
-//
-//void loop() {
-//  // nothing
-//}
-//
-//
-//
-// ****************connect to WIFI****************
-//
-//char ssid[] = SECRET_SSID;
-//char pass[] = PASSWORD;
-//int status = WL_IDLE_STATUS;     // the Wifi radio's status
-//
-//void setup() {
-//  Serial.begin(9600);
-//  while (!Serial) {
-//    ; // wait for serial port to connect. Needed for native USB port only
-//  }
-//
-//  // check for the WiFi module:
-//  if (WiFi.status() == WL_NO_MODULE) {
-//    Serial.println("Communication with WiFi module failed!");
-//    while (true);
-//  }
-//
-//  String fv = WiFi.firmwareVersion();
-//  if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
-//    Serial.println("Please upgrade the firmware");
-//  }
-//
-//  // attempt to connect to Wifi network:
-//  while (status != WL_CONNECTED) {
-//    Serial.print("Attempting to connect to WPA SSID: ");
-//    Serial.println(ssid);
-//    // Connect to WPA/WPA2 network:
-//    status = WiFi.begin(ssid, pass);
-//
-//    // wait 10 seconds for connection:
-//    delay(10000);
-//  }
-//
-//  // you're connected now, so print out the data:
-//  Serial.print("You're connected to the network");
-//  printCurrentNet();
-//  printWifiData();
-//}
-//
-//void loop() {
-//  // check the network connection once every 10 seconds:
-//  delay(10000);
-//  printCurrentNet();
-//}
-//
-//void printWifiData() {
-//  // print your board's IP address:
-//  IPAddress ip = WiFi.localIP();
-//  Serial.print("IP Address: ");
-//  Serial.println(ip);
-//  Serial.println(ip);
-//
-//  // print your MAC address:
-//  byte mac[6];
-//  WiFi.macAddress(mac);
-//  Serial.print("MAC address: ");
-//  printMacAddress(mac);
-//}
-//
-//void printCurrentNet() {
-//  // print the SSID of the network you're attached to:
-//  Serial.print("SSID: ");
-//  Serial.println(WiFi.SSID());
-//
-//  // print the MAC address of the router you're attached to:
-//  byte bssid[6];
-//  WiFi.BSSID(bssid);
-//  Serial.print("BSSID: ");
-//  printMacAddress(bssid);
-//
-//  // print the received signal strength:
-//  long rssi = WiFi.RSSI();
-//  Serial.print("signal strength (RSSI):");
-//  Serial.println(rssi);
-//
-//  // print the encryption type:
-//  byte encryption = WiFi.encryptionType();
-//  Serial.print("Encryption Type:");
-//  Serial.println(encryption, HEX);
-//  Serial.println();
-//}
