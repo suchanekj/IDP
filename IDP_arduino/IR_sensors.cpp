@@ -16,6 +16,34 @@ SharpIR IRsensor_L = SharpIR(IR_L_PIN, IR_L_MODEL);
 SharpIR IRsensor_R = SharpIR(IR_R_PIN, IR_R_MODEL);
 SharpIR IRsensor_F = SharpIR(IR_F_PIN, IR_F_MODEL);
 
+
+#define NUM_VALUES 7
+#define NUM_VALUES_HALL 7
+#define NUM_VALUES_MINE 3
+int sensor_values[5][NUM_VALUES] = {0};
+int sensor_iter[5] = {0};
+
+int median_filter(int sensor, int new_value, int num_values) {
+  int * values = sensor_values[sensor];
+  int * iter = &sensor_iter[sensor];
+  values[*iter] = new_value;
+  *iter = (*iter + 1) % num_values;
+  int values_cp[NUM_VALUES];
+  for(int i = 0; i < num_values; i++)
+    values_cp[i] = values[i];
+  for(int i = num_values - 1; i > 0; i--) {
+    for(int j = 0; j < i; j++) {
+      if(values_cp[j] > values_cp[j + 1]) {
+        int a = values_cp[j];
+        values_cp[j] = values_cp[j + 1];
+        values_cp[j + 1] = a;
+      }
+    }
+  }
+  return values_cp[num_values / 2];
+}
+
+
 void sensors_init() {
   pinMode(SONIC_L_TRIGGER_PIN, OUTPUT);
   pinMode(SONIC_L_ECHO_PIN, INPUT);
@@ -30,6 +58,9 @@ void sensors_init() {
   pinMode(HALL_SENSOR_1_PIN, INPUT);
   pinMode(HALL_SENSOR_2_PIN, INPUT);
   pinMode(HALL_SENSOR_3_PIN, INPUT);
+  
+  pinMode(HALL_NO_FLIP_PIN, INPUT);
+  pinMode(HALL_FLIP_PIN, INPUT);
 }
 
 void hall_reset() {
@@ -38,17 +69,30 @@ void hall_reset() {
 
 void get_hall_sensors() {
   hall_1 = analogRead(HALL_SENSOR_1_PIN);
+  hall_1 = median_filter(0, hall_1, NUM_VALUES_HALL);
   hall_2 = analogRead(HALL_SENSOR_2_PIN);
+  hall_2 = median_filter(1, hall_2, NUM_VALUES_HALL);
   hall_3 = analogRead(HALL_SENSOR_3_PIN);
-  if(digitalRead(HALL_DETECTED_PIN) == HIGH) {
+  hall_3 = median_filter(2, hall_3, NUM_VALUES_HALL);
+//  if(digitalRead(HALL_DETECTED_PIN) == HIGH) {
+//    magnet_detection = true;
+//  }
+//  if(digitalRead(HALL_FLIP_PIN) == HIGH) {
+//    magnet_direction_flip = true;
+//  }
+//  TODO: fix comparisons and tresholds - TEST
+  if(max(max(hall_1, hall_2), hall_3) > 530 or
+     min(min(hall_1, hall_2), hall_3) < 490) { // There is a magnet on top
     magnet_detection = true;
   }
-  if(digitalRead(HALL_FLIP_PIN) == HIGH) {
+  if(min(min(hall_1, hall_2), hall_3) < 490) { // There is a magnet on top
     magnet_direction_flip = true;
   }
-  // TODO: fix comparisons and tresholds - TEST !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if(hall_1 > 560 or hall_2 > 560 or hall_3 > 560 or
-     hall_1 < 460 or hall_2 < 460 or hall_3 < 460) { // There is a magnet on top
+  if(max(max(hall_1, hall_2), hall_3) > 560) { // There is a magnet on top
+    magnet_direction_flip = false;
+  }
+  if(max(max(hall_1, hall_2), hall_3) > 560 or
+     min(min(hall_1, hall_2), hall_3) < 460) { // There is a magnet on top
     magnet_side = true;
   }
 }
@@ -71,7 +115,9 @@ void get_wall_position(){
 //mine position
 void get_mine_position(){
   L_mine_distance = IRsensor_L.distance();
+  L_mine_distance = median_filter(3, L_mine_distance, NUM_VALUES_MINE);
   R_mine_distance = IRsensor_R.distance();
+  R_mine_distance = median_filter(4, R_mine_distance, NUM_VALUES_MINE);
   mine_centered = false, mine_L = false, mine_R = false;
 
   if (L_mine_distance > MINE_CENTERED_MIN and L_mine_distance < MINE_CENTERED_MAX and

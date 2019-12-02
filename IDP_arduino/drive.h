@@ -4,6 +4,7 @@ extern bool drive_distance_verbose;
 extern bool drive_velocity_verbose;
 extern bool robotIsMoving;
 extern float angle;
+extern bool mine_in;
 
 void picker_test();
 void pickup(bool top, bool flip);
