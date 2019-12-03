@@ -11,13 +11,13 @@ long time_led = 0;
 
 void setup() {
   Serial.begin(115200); // Open serial monitor at 115200 baud to see ping results.
-//  drive_init();
-//  sensors_init();
+  drive_init();
+  sensors_init();
   
   drive_distance_verbose = false;
   drive_velocity_verbose = false;
 //  delay(5000);
-  wifi_init();
+//  wifi_init();
 }
 
 
@@ -30,8 +30,8 @@ void loop() {
 //  delay(200000);
 //  picker_test();
 //  drive_test();
-  wifi_run();
-  return;
+//  wifi_run();
+//  return;
 
   hall_reset();
   get_wall_position();
@@ -81,7 +81,7 @@ void loop() {
       Serial.println("mine centered");
       hall_reset();
       if(mine_centered)
-        drive_distance(0, -3);
+        drive_distance(0, -4 - R_mine + L_mine);
       else if(L_mine_distance < 8)
         drive_distance(0, -6);
       else if(R_mine_distance < 8)
@@ -114,7 +114,7 @@ void loop() {
       Serial.println("hall detected");
       drive_velocity(0, 0);
       
-//      pickup(magnet_side, magnet_direction_flip);  *************************************************
+      pickup(magnet_side, magnet_direction_flip);
 
       Serial.println("picked up");
       
@@ -147,9 +147,11 @@ void loop() {
       drive_distance(move_by, 0);
       drive_distance(0, turn_angle);
       drive_distance(-40, 0);
+      if(angle < 0) angle = -90;
+      else angle = 90;
       drive_velocity(STANDARD_VEL, 0);
     } else {
-      drive_velocity(STANDARD_VEL, 0);
+      drive_velocity(SEARCHING_VEL, 0);
     }
   } else if (state == STATE_CARRYING){
     if(angle > 0)
@@ -169,8 +171,8 @@ void loop() {
     } while (F_wall_distance > 25);
     time_drive = millis() - time_drive;
     drive_distance(40, 0);
-    drive_distance(-5, 0);
-    drive_distance(0, 87);
+    drive_distance(-2, 0);
+    drive_distance(0, 85);
     drive_velocity(STANDARD_VEL, 0);
     do {
       get_wall_position();
@@ -187,8 +189,16 @@ void loop() {
 
     drive_distance(0, 90);
     drive_distance(-30, 0);
+    angle = 0;
     float distance = time_drive * STANDARD_VEL / VEL2DIS_TIME_MULT;
-    drive_distance(max(distance + 10, 45.0), 0);
+    float distance_maxed = max(distance + 10, 35.0);
+    Serial.print("time_drive ");
+    Serial.print(time_drive);
+    Serial.print("distance ");
+    Serial.print(distance);
+    Serial.print("distance_maxed ");
+    Serial.print(distance_maxed);
+    drive_distance(distance_maxed, 0);
     drive_distance(0, 90);
     mine_counter += 1;
     if (mine_counter != 8){

@@ -39,10 +39,10 @@
 
 // drive settings
 
-#define STANDARD_VEL 6
+#define STANDARD_VEL 12
 #define SEARCHING_VEL 8
 #define POWER_L_TO_R 0.995
-#define MAX_VEL 10
+#define MAX_VEL 12.4
 
 #define WHEEL_SEPARATION 28
 #define VEL2DIS_TIME_MULT 640
