@@ -70,6 +70,10 @@ void wifi_run() {
       packetBuffer[len] = 0;
     }
     respond_command(packetBuffer[0]);
+    byte msg = "x";
+    byte ip[4] = {192, 168, 43, 161};
+    Udp.beginPacket(ip, port);
+    Udp.write(msg);
   }
 }
 

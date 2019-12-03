@@ -127,7 +127,7 @@ void loop() {
     } else if (mine_R){
       drive_distance(0.2, -1);
       
-    } else if (F_wall_distance <= 25) {
+    } else if (F_wall_distance <= 30) {
 //      if (L_wall_distance <= 30 or R_wall_distance <= 30){
 //        state = STATE_RETURNING;
 //        return;
