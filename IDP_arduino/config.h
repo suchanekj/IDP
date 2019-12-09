@@ -33,6 +33,9 @@
 #define AMBER_LED 6
 #define RED_LED 7
 
+#define FRONT_L_PIN 4
+#define FRONT_R_PIN 5
+
 /*
  *  config parameters
  */
@@ -44,7 +47,7 @@
 #define POWER_L_TO_R 0.995
 #define MAX_VEL 12.4
 
-#define WHEEL_SEPARATION 28
+#define WHEEL_SEPARATION 26
 #define VEL2DIS_TIME_MULT 640
 #define CMS2POWER 20.5
 

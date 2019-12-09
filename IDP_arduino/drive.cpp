@@ -47,7 +47,7 @@ Adafruit_DCMotor *MotorTop = AFMS.getMotor(1);
 Adafruit_DCMotor *MotorBottom = AFMS.getMotor(2);
 Servo servoPicker;
 
-#define SERVO_POSITION_BOTTOM 96
+#define SERVO_POSITION_BOTTOM 97
 #define SERVO_POSITION_TOP 119
 #define SERVO_POSITION_LEVEL 130
 
@@ -183,10 +183,10 @@ void drive_test(){
 
   delay(5000);
   
-//  Serial.println("move along a straight line of 50cm");
-//  drive_distance(50, 0);
-//
-//  delay(5000);
+  Serial.println("move along a straight line of 50cm");
+  drive_distance(50, 0);
+
+  delay(5000);
 
   Serial.println("turn right 180deg");
   drive_distance(0, 180);

@@ -29,17 +29,41 @@ import numpy as np
 #                 treshold += 1
 #     print("er", erodes, "tres", treshold, "bs", blurSize, "ts", tresholdSize)
 
+def _draw_grid(img, line_color=0, thickness=1, type_=cv2.LINE_AA, pxstep=100):
+    '''(ndarray, 3-tuple, int, int) -> void
+    draw gridlines on img
+    line_color:
+        BGR representation of colour
+    thickness:
+        line thickness
+    type:
+        8, 4 or cv2.LINE_AA
+    pxstep:
+        grid line frequency in pixels
+    '''
+    x = pxstep
+    y = pxstep
+    while x < img.shape[1]:
+        cv2.line(img, (x, 0), (x, img.shape[0]), color=line_color, lineType=type_, thickness=thickness)
+        x += pxstep
+
+    while y < img.shape[0]:
+        cv2.line(img, (0, y), (img.shape[1], y), color=line_color, lineType=type_, thickness=thickness)
+        y += pxstep
+
+
 class MineDetection(object):
     def __init__(self):
         self.erodes = 1
         self.treshold = 3
         self.blurSize = 5
         self.tresholdSize = 10
-        self.limits = [(15, 100), (-1, 120) , (-1, -32), (15, -32)]
+        self.limits = [(50, 150), (-1, 170) , (-1, -32), (50, -32)]
         self.mine_mask = None
         self.momentum = 0.9
         self.mine_positions = []
         self.remaining_mines = 7
+        self.mask_remaining = None
 
     def get_mines_mask(self, frame, robot_mask):
         blurred = cv2.GaussianBlur(frame, (2 * self.blurSize + 1, 2 * self.blurSize + 1), 0)
@@ -63,7 +87,8 @@ class MineDetection(object):
         frame_hsv = cv2.cvtColor(cv2.GaussianBlur(frame, (5, 5), 0), cv2.COLOR_BGR2HSV)
         colour_mask = cv2.inRange(frame_hsv, (0, 0, 0), (255, 80, 255)) // 255
         colour_mask = cv2.erode(colour_mask, None, iterations=30)
-        mask = ((255 - mask) * limit_mask * colour_mask * robot_mask).astype(np.float32)
+        self.mask_remaining = limit_mask * colour_mask * robot_mask
+        mask = ((255 - mask) * self.mask_remaining).astype(np.float32)
 
         if self.mine_mask is None:
             self.mine_mask = mask
@@ -74,12 +99,23 @@ class MineDetection(object):
     def get_mine_positions(self, frame):
         contours, _ = cv2.findContours(np.greater(self.mine_mask, 10).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         mines = []
+        find_mines = self.remaining_mines
         for cnt in contours:
             x, y, w, h = cv2.boundingRect(cnt)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             mines.append((np.sum((self.mine_mask[y:y+w, x:x+w])), (x + w//2, y + h//2)))
+        if len(mines) == 0:
+            mask_remaining = self.mask_remaining.copy()
+            _draw_grid(mask_remaining)
+            contours, _ = cv2.findContours(mask_remaining, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            mines = []
+            for cnt in contours:
+                x, y, w, h = cv2.boundingRect(cnt)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                mines.append((np.sum((mask_remaining[y:y+w, x:x+w])), (x + w//2, y + h//2)))
+            find_mines = 1
         mines.sort(reverse=True)
-        self.mine_positions =[pos for _, pos in mines[0:self.remaining_mines]]
+        self.mine_positions =[pos for _, pos in mines[0:find_mines]]
         for x, y in self.mine_positions:
             cv2.circle(frame, (x, y), 3, (255, 255, 0), -1)
         return frame

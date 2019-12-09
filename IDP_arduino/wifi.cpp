@@ -2,6 +2,7 @@
 #include <WiFiUdp.h>
 #include <WiFiNINA.h>
 #include "wifi.h"
+#include "config.h"
 
 // 0) Kuba Signal: -52 dBm Encryption: 4
 // MAC: 24:0A:C4:AC:D7:DC
@@ -19,6 +20,9 @@ int status = WL_IDLE_STATUS;
 unsigned int localPort = 2390;      // local port to listen on
 char packetBuffer[255];
 WiFiUDP Udp;
+int command_angle = 0;
+long last_command_time = 0;
+bool halted = true;
 
 void wifi_init() {
   if (WiFi.status() == WL_NO_MODULE) {
@@ -55,7 +59,8 @@ void wifi_run() {
   if(status != WL_CONNECTED) wifi_init();  
   
   int packetSize = Udp.parsePacket();
-  if (packetSize) {
+//  Serial.println(packetSize);
+  while (packetSize) {
     Serial.print("Received packet of size ");
     Serial.println(packetSize);
     Serial.print("From ");
@@ -70,10 +75,22 @@ void wifi_run() {
       packetBuffer[len] = 0;
     }
     respond_command(packetBuffer[0]);
-    byte msg = "x";
-    byte ip[4] = {192, 168, 43, 161};
-    Udp.beginPacket(ip, port);
-    Udp.write(msg);
+//    byte msg = "x";
+//    byte ip[4] = {192, 168, 43, 161};
+//    Udp.beginPacket(ip, port);
+//    Udp.write(msg);
+    packetSize = Udp.parsePacket();
+  }
+}
+
+void wifi_clear() {
+  while(1) {
+    int packetSize = Udp.parsePacket();
+    if (packetSize) {
+      // read the packet into packetBufffer
+      int len = Udp.read(packetBuffer, 255);
+    }
+    else return;
   }
 }
 
@@ -96,7 +113,16 @@ void printWifiStatus() {
 }
 
 // ####################################################### Respond to Command #################################################
-void respond_command (char I) {
-  Serial.println(I);
-  
+void respond_command (byte I) {
+  if((char) I == 'h') {
+    halted = true;
+  } else {
+    halted = false;
+    int ang = I;
+    if (ang >= 128) ang = ang - 256;
+    Serial.println(ang);
+    command_angle = ang;
+  }
+  last_command_time = millis();
+//  digitalWrite(RED_LED, digitalRead(RED_LED) ^ 1);
 }

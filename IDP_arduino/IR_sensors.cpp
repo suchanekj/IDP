@@ -61,6 +61,9 @@ void sensors_init() {
   
   pinMode(HALL_NO_FLIP_PIN, INPUT);
   pinMode(HALL_FLIP_PIN, INPUT);
+
+  pinMode(FRONT_L_PIN, INPUT);
+  pinMode(FRONT_R_PIN, INPUT);
 }
 
 void hall_reset() {
@@ -110,6 +113,9 @@ void get_wall_position(){
   }
   
   F_wall_distance = IRsensor_F.distance();
+  if(digitalRead(FRONT_L_PIN) == HIGH or digitalRead(FRONT_R_PIN) == HIGH) {
+    F_wall_distance = 5;
+  }
 }
 
 //mine position
